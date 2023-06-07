@@ -8,11 +8,14 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(20.0),
       child: Form(
+        key: formKey,
         child: Column(
           children: [
             emailField(),
@@ -34,6 +37,11 @@ class _LoginScreenState extends State<LoginScreen> {
         hintText: 'you@example.com',
       ),
       keyboardType: TextInputType.emailAddress,
+      validator: (value) {
+        return (value != null && value.contains('@'))
+            ? null
+            : 'Value must be a proper email';
+      },
     );
   }
 
@@ -44,13 +52,20 @@ class _LoginScreenState extends State<LoginScreen> {
         hintText: 'Password',
       ),
       obscureText: true,
+      validator: (value) {
+        return (value != null && value.length > 7)
+            ? null
+            : 'Password must be 8 characters long';
+      },
     );
   }
 
   Widget submitButton() {
     return ElevatedButton(
       child: const Text('Submit!'),
-      onPressed: () {},
+      onPressed: () {
+        formKey.currentState?.validate();
+      },
     );
   }
 }
