@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../mixins/validation_mixin.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -7,8 +8,11 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
   final formKey = GlobalKey<FormState>();
+
+  String email = '';
+  String password = '';
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +41,9 @@ class _LoginScreenState extends State<LoginScreen> {
         hintText: 'you@example.com',
       ),
       keyboardType: TextInputType.emailAddress,
-      validator: (value) {
-        return (value != null && value.contains('@'))
-            ? null
-            : 'Value must be a proper email';
+      validator: validateEmail,
+      onSaved: (newValue) {
+        email = newValue!;
       },
     );
   }
@@ -52,10 +55,9 @@ class _LoginScreenState extends State<LoginScreen> {
         hintText: 'Password',
       ),
       obscureText: true,
-      validator: (value) {
-        return (value != null && value.length > 7)
-            ? null
-            : 'Password must be 8 characters long';
+      validator: validatePassword,
+      onSaved: (newValue) {
+        password = newValue!;
       },
     );
   }
@@ -64,7 +66,10 @@ class _LoginScreenState extends State<LoginScreen> {
     return ElevatedButton(
       child: const Text('Submit!'),
       onPressed: () {
-        formKey.currentState?.validate();
+        if (formKey.currentState!.validate()) {
+          formKey.currentState!.save();
+          print('Time to post $email and $password to my API');
+        }
       },
     );
   }
